@@ -1,0 +1,22 @@
+# Credentials and secrets
+.credentials.json
+
+# Session and history data
+history.jsonl
+session-env/
+
+# Cache and temporary files
+debug/
+file-history/
+shell-snapshots/
+todos/
+downloads/
+
+# Project-specific state
+projects/
+
+# Feature flags and telemetry
+statsig/
+
+# IDE integration
+ide/
