@@ -1,4 +1,7 @@
 {
+  "env": {
+    "MAX_THINKING_TOKENS": "32000"
+  },
   "permissions": {
     "allow": [
       "Bash(./hack/spec_metadata.sh)",
@@ -7,7 +10,5 @@
     ]
   },
   "enableAllProjectMcpServers": false,
-  "env": {
-    "MAX_THINKING_TOKENS": "32000"
-  }
+  "alwaysThinkingEnabled": true
 }
