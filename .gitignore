@@ -20,3 +20,10 @@ statsig/
 
 # IDE integration
 ide/
+
+# Imported/archived configs
+claude-config/
+claude-config.zip
+
+# Plans
+plans/
