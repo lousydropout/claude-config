@@ -6,9 +6,18 @@
     "allow": [
       "Bash(./hack/spec_metadata.sh)",
       "Bash(hack/spec_metadata.sh)",
-      "Bash(bash hack/spec_metadata.sh)"
-    ]
+      "Bash(bash hack/spec_metadata.sh)",
+      "Bash(bunx tsc:*)",
+      "Bash(bun run:*)",
+      "Bash(bun -e:*)",
+      "Bash(sqlite3:*)",
+      "Bash(bun test:*)",
+      "Bash(git config:*)"
+    ],
+    "deny": [],
+    "ask": [],
+    "defaultMode": "acceptEdits"
   },
   "enableAllProjectMcpServers": false,
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": false
 }
