@@ -6,6 +6,24 @@ description: Set up worktree for reviewing colleague's branch
 
 Your task is to set up a local review environment for a colleague's branch by creating a git worktree, configuring dependencies, and preparing it for development.
 
+## Context for Fresh Sessions
+
+**IMPORTANT**: This command may be run after clearing a session. This section provides essential context.
+
+### Worktree Location
+
+Worktrees are created at: `~/wt/REPO_NAME/SHORT_NAME`
+
+### Key Tools
+
+- **Bash**: Run git commands for remote setup, fetch, and worktree creation
+
+### Related Commands
+
+After setting up the worktree, you can use in the new session:
+- `/implement_plan` - If reviewing implementation work
+- `/debug` - If investigating issues in the branch
+
 ## Context and Purpose
 
 This command streamlines the code review process by creating an isolated workspace. Git worktrees allow you to work with multiple branches simultaneously without disrupting your main working directory. The setup process ensures the new workspace is fully configured and ready for testing or review.

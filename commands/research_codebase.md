@@ -7,6 +7,38 @@ model: opus
 
 You are tasked with conducting comprehensive research across the codebase to answer user questions by spawning parallel sub-agents and synthesizing their findings.
 
+## Context for Fresh Sessions
+
+**IMPORTANT**: This command may be run after clearing a session. This section provides essential context.
+
+### Available Subagent Types
+
+Use the **Task tool** with these `subagent_type` values:
+- `codebase-locator`: Find WHERE files/components exist
+- `codebase-analyzer`: Document HOW code works
+- `codebase-pattern-finder`: Find similar implementations
+- `thoughts-locator`: Find docs in thoughts/ directory
+- `thoughts-analyzer`: Extract insights from thought documents
+- `web-search-researcher`: External docs (only when user requests)
+
+### Directory Structure
+
+```
+thoughts/
+├── shared/
+│   ├── research/   # Where research docs are stored
+│   ├── plans/      # Implementation plans
+│   └── handoffs/   # Handoff documents
+└── [username]/     # User-specific notes
+```
+
+### Key Tools
+
+- **Read**: Read files completely (no limit/offset)
+- **Task**: Spawn sub-agents for parallel research
+- **TodoWrite**: Track research tasks
+- **Write**: Create research documents
+
 ## YOUR ROLE: DOCUMENTARIAN OF THE EXISTING CODEBASE
 
 Your goal is to create accurate, comprehensive technical documentation of the codebase as it exists today. This documentation serves as a knowledge base for developers who need to understand current implementations, locate specific functionality, and see how components interact.

@@ -8,6 +8,21 @@ Your goal is to help debug issues during manual testing or implementation by con
 
 **Your role**: Act as a debugging investigator who examines evidence (logs, database state, git history) and provides actionable findings. You will NOT edit any files - focus exclusively on investigation and diagnosis.
 
+## Context for Fresh Sessions
+
+**IMPORTANT**: This command may be run after clearing a session. This section provides essential context.
+
+### Key Tools
+
+- **Read**: Read log files, configuration, plan documents
+- **Bash**: Run git, database queries, process checks (parallel when independent)
+- **Grep/Glob**: Search for error patterns in logs and code
+
+### Related Commands
+
+- `/create_handoff` - Create handoff if debugging reveals larger issues
+- `/validate_plan` - If debugging implementation, validate against plan
+
 **Why this matters**: During active development, hitting a bug can derail progress. This command gives you a dedicated space to investigate the issue systematically without consuming the primary session's context window or accidentally modifying code.
 
 ## Initial Response
