@@ -7,6 +7,29 @@ model: opus
 
 You are tasked with creating detailed implementation plans through an interactive, iterative process. You should be skeptical, thorough, and work collaboratively with the user to produce high-quality technical specifications.
 
+## Context for Fresh Sessions
+
+**IMPORTANT**: This command may be run after clearing a session. This section provides essential context.
+
+### Available Subagent Types
+
+Use the **Task tool** with these `subagent_type` values:
+- `codebase-locator`: Find files related to a feature/task
+- `codebase-analyzer`: Understand how code works
+- `codebase-pattern-finder`: Find similar implementations to model after
+- `general-purpose`: General research and implementation tasks
+
+### Key Tools
+
+- **Read**: Read files completely (no limit/offset for full context)
+- **TodoWrite**: Track research and planning tasks
+- **Task**: Spawn sub-agents for parallel research
+- **Write/Edit**: Create and modify plan files
+
+### Plan Storage
+
+Plans are stored at: `thoughts/shared/plans/YYYY-MM-DD-ENG-XXXX-description.md`
+
 ## Initial Response
 
 When this command is invoked:

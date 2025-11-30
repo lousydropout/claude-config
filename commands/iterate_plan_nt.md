@@ -7,6 +7,29 @@ model: opus
 
 Your task is to update existing implementation plans based on user feedback. Apply a skeptical, research-driven approach where every change is grounded in actual codebase reality. This ensures plans remain accurate and executable.
 
+## Context for Fresh Sessions
+
+**IMPORTANT**: This command may be run after clearing a session. This section provides essential context.
+
+### Available Subagent Types
+
+Use the **Task tool** with these `subagent_type` values:
+- `codebase-locator`: Find files related to a feature/task
+- `codebase-analyzer`: Understand how code works
+- `codebase-pattern-finder`: Find similar implementations to model after
+- `general-purpose`: General research tasks
+
+### Key Tools
+
+- **Read**: Read plan files completely (no limit/offset)
+- **Edit**: Make precise changes to plan files
+- **TodoWrite**: Track complex update tasks
+- **Task**: Spawn sub-agents for research when needed
+
+### Plan Storage
+
+Plans are typically at: `thoughts/shared/plans/YYYY-MM-DD-ENG-XXXX-description.md`
+
 ## Initial Response
 
 When this command is invoked:

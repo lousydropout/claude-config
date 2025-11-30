@@ -8,6 +8,34 @@ Create a handoff document that enables seamless work transfer to another agent i
 
 **Why this matters**: Handoffs enable continuity across sessions. A well-crafted handoff allows the next agent to resume work immediately without redundant exploration or losing critical context.
 
+## Context for Fresh Sessions
+
+**IMPORTANT**: This command may be run during any session. This section ensures you have the context needed to create a useful handoff.
+
+### Directory Structure
+
+```
+thoughts/shared/
+├── handoffs/     # Handoff documents organized by ticket
+│   ├── ENG-XXXX/ # Ticket-specific directories
+│   └── general/  # Non-ticket handoffs
+├── plans/        # Implementation plans to reference
+└── research/     # Research documents to reference
+```
+
+### Key Tools
+
+- **Read**: Review current work, plans, and research documents
+- **Bash**: Run git commands to get metadata (commit hash, branch, timestamp)
+- **Write**: Create the handoff document
+- **TodoWrite**: Summarize task progress
+
+### Related Commands
+
+- `/resume_handoff path/to/handoff.md` - How the next session will resume
+- `/create_plan` - Plans that should be referenced in handoffs
+- `/implement_plan` - Implementation that should be documented
+
 ## Process
 
 ### 1. Gather Metadata & Determine Filepath
@@ -21,6 +49,11 @@ Execute these tasks in parallel to gather all necessary information:
 
 Construct the filepath following this pattern:
 `thoughts/shared/handoffs/ENG-XXXX/YYYY-MM-DD_HH-MM-SS_ENG-ZZZZ_description.md`
+
+**Ensure directory exists**: Before writing the handoff, create the directory if needed:
+```bash
+mkdir -p thoughts/shared/handoffs/ENG-XXXX  # or 'general' if no ticket
+```
 
 **Filepath components**:
 - `YYYY-MM-DD`: Today's date

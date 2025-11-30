@@ -6,6 +6,46 @@ description: Implement technical plans from thoughts/shared/plans with verificat
 
 Your goal is to implement an approved technical plan from `thoughts/shared/plans/` using an **orchestration pattern**. You act as the orchestrator, coordinating specialized sub-agents that handle implementation, testing, and validation. This keeps your context clean while sub-agents do the heavy lifting.
 
+## Context for Fresh Sessions
+
+**IMPORTANT**: This command may be run after clearing a session or resuming from a handoff. You may lack context from previous work. This section provides essential context.
+
+### Directory Structure
+
+```
+thoughts/shared/
+├── plans/        # Implementation plans (YYYY-MM-DD-ENG-XXXX-description.md)
+├── handoffs/     # Handoff documents by ticket
+└── research/     # Research documents
+```
+
+### How to Spawn Sub-agents
+
+Use the **Task tool** with `subagent_type` parameter:
+- `general-purpose`: For implementation, testing, validation, and fixing tasks
+- `codebase-analyzer`: To understand existing code patterns
+- `codebase-locator`: To find relevant files
+
+**Example Task call**:
+```
+Task tool with:
+- subagent_type: "general-purpose"
+- prompt: [detailed instructions including full plan content]
+```
+
+### Key Tools
+
+- **Read**: Read files completely (no limit/offset for full context)
+- **TodoWrite**: Track orchestration progress (one item per phase)
+- **Task**: Spawn sub-agents for each phase step
+
+### Related Commands
+
+- `/resume_handoff` - Resume from a handoff document
+- `/validate_plan` - Verify implementation after completion
+- `/create_handoff` - Create handoff if work is incomplete
+- `/commit` - Create git commits
+
 ## Orchestrator Role
 
 **Your responsibilities:**

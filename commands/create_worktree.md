@@ -5,6 +5,30 @@ description: Create worktree and launch implementation session for a plan
 # Goal
 Create a git worktree for isolated development to implement a plan file. This enables parallel work on multiple features without branch conflicts.
 
+## Context for Fresh Sessions
+
+**IMPORTANT**: This command may be run after clearing a session. This section provides essential context.
+
+### Directory Structure
+
+```
+thoughts/shared/
+├── plans/        # Implementation plans (YYYY-MM-DD-ENG-XXXX-description.md)
+├── handoffs/     # Handoff documents by ticket
+└── research/     # Research documents
+
+~/wt/             # Default worktree location
+└── REPO_NAME/
+    └── SHORT_NAME/  # Individual worktrees
+```
+
+### Related Commands
+
+After creating the worktree, use these commands in the new session:
+- `/implement_plan [plan_path]` - Implement an existing plan
+- `/oneshot_plan [ticket]` - Create plan and implement in one workflow
+- `/resume_handoff [handoff_path]` - Resume from previous work
+
 # Step 1: Determine Repository and Paths
 
 First, gather information about the current repository:

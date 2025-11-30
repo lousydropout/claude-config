@@ -6,6 +6,35 @@ description: Research ticket and launch planning session
 
 Your goal is to research a ticket and then create a comprehensive implementation plan for it.
 
+## Context for Fresh Sessions
+
+**IMPORTANT**: This command may be run after clearing a session. This section provides essential context.
+
+### Available Subagent Types
+
+Use the **Task tool** with these `subagent_type` values:
+- `codebase-locator`: Find files related to a feature/task
+- `codebase-analyzer`: Understand how code works
+- `codebase-pattern-finder`: Find similar implementations
+- `thoughts-locator`: Find existing research/plans in thoughts/
+- `general-purpose`: General research tasks
+
+### Directory Structure
+
+```
+thoughts/
+├── shared/
+│   ├── plans/     # Implementation plans
+│   ├── handoffs/  # Handoff documents
+│   └── research/  # Research documents
+└── [username]/
+    └── tickets/   # Ticket descriptions
+```
+
+### Related Commands
+
+- `/create_plan` - Used in Step 4 to create the implementation plan
+
 ## What This Command Does
 
 This command automates the workflow of researching a ticket's context and then creating a detailed implementation plan. It combines the research and planning phases into a single streamlined workflow.

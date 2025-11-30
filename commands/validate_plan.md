@@ -6,13 +6,39 @@ description: Validate implementation against plan, verify success criteria, iden
 
 Your goal is to validate that an implementation plan was correctly executed. You will verify all success criteria are met and identify any deviations, issues, or incomplete work. This validation catches problems before they reach production and ensures the implementation fulfills its intended purpose.
 
+## Context for Fresh Sessions
+
+**IMPORTANT**: This command may be run after clearing a session. You may lack context from previous work. This section provides essential context.
+
+### Directory Structure
+
+```
+thoughts/shared/
+├── plans/        # Implementation plans (YYYY-MM-DD-ENG-XXXX-description.md)
+├── handoffs/     # Handoff documents by ticket (check for recent context)
+└── research/     # Research documents
+```
+
+### Key Tools
+
+- **Read**: Read plan files completely (no limit/offset)
+- **Bash**: Run git commands, `make test`, `make check`, etc.
+- **Grep/Glob**: Search for files and patterns
+- **Task**: Spawn research sub-agents for parallel validation
+
+### Related Commands
+
+- `/resume_handoff` - If a handoff exists, resume from it first for context
+- `/implement_plan` - The command that executes plans
+- `/create_handoff` - Create handoff if issues need follow-up
+
 ## Initial Setup
 
 ### Step 1: Establish Context
 
 Determine your starting point to focus validation appropriately:
-- **Existing conversation**: Review this session's todo list and conversation history to see what was just implemented
-- **Fresh session**: Analyze git history and codebase to discover what was recently completed
+- **If plan path provided**: Read the plan directly and proceed to validation
+- **If no path provided**: Check for recent handoffs at `thoughts/shared/handoffs/` that may reference the plan, or analyze git history to discover what was recently completed
 
 ### Step 2: Locate the Implementation Plan
 

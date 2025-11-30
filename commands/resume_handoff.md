@@ -8,6 +8,65 @@ You will resume work from a handoff document through an interactive analysis and
 
 **WHY THIS MATTERS**: Handoffs bridge sessions and prevent work duplication. They contain hard-won insights that would otherwise be lost. Thorough context restoration ensures you build on previous progress rather than retracing steps.
 
+## Context for Fresh Sessions
+
+**IMPORTANT**: This command is designed to be run after clearing a session, so you may lack context that was built up during previous work. This section provides the essential context you need.
+
+### Directory Structure
+
+The project uses a `thoughts/` directory hierarchy for documentation and planning:
+
+```
+thoughts/
+├── shared/                    # Shared across all users/sessions
+│   ├── handoffs/             # Handoff documents organized by ticket
+│   │   ├── ENG-XXXX/         # Ticket-specific handoffs
+│   │   │   └── YYYY-MM-DD_HH-MM-SS_ENG-XXXX_description.md
+│   │   └── general/          # Non-ticket handoffs
+│   ├── plans/                # Implementation plans
+│   │   └── YYYY-MM-DD-ENG-XXXX-description.md
+│   └── research/             # Research documents
+└── [username]/               # User-specific thoughts/tickets
+    └── tickets/              # Ticket descriptions
+```
+
+### Available Tools and Subagents
+
+You have access to these key tools:
+- **Read**: Read files completely (prefer no limit/offset for full context)
+- **Edit**: Make precise changes to files
+- **Write**: Create new files
+- **Grep**: Search for patterns in files
+- **Glob**: Find files by pattern
+- **Bash**: Run shell commands (git, make, etc.)
+- **TodoWrite**: Track tasks and progress (use this frequently!)
+- **Task**: Spawn sub-agents for parallel research
+
+**Subagent types** available via the Task tool:
+- `codebase-locator`: Find files related to a feature/task
+- `codebase-analyzer`: Understand how code works
+- `codebase-pattern-finder`: Find similar implementations to model after
+- `thoughts-locator`: Find relevant documents in thoughts/
+- `thoughts-analyzer`: Extract insights from thoughts documents
+- `general-purpose`: General-purpose agent for complex tasks
+- `Explore`: Quick codebase exploration
+
+### Related Commands
+
+Other slash commands that integrate with handoffs:
+- `/create_plan` - Create implementation plans (stored in `thoughts/shared/plans/`)
+- `/implement_plan` - Execute plans using sub-agent orchestration
+- `/validate_plan` - Verify implementation matches plan
+- `/create_handoff` - Create a new handoff document
+- `/commit` - Create git commits with proper formatting
+
+### Project Conventions
+
+- **File references**: Use `path/to/file.ext:line-range` format (e.g., `src/app.ts:45-60`)
+- **Parallel execution**: When tasks are independent, spawn multiple sub-agents concurrently
+- **Read files completely**: Use Read without limit/offset to get full context
+- **Track progress**: Use TodoWrite to maintain visibility into your work
+
 ## Initial Response
 
 When this command is invoked, follow the appropriate path based on the provided parameters:

@@ -6,6 +6,40 @@ description: Execute ralph plan and implementation for a ticket
 
 This command orchestrates a complete ticket workflow using specialized sub-agents. You act as the **orchestrator**, coordinating planning and implementation while sub-agents handle the detailed work. This keeps your context clean for high-level coordination.
 
+## Context for Fresh Sessions
+
+**IMPORTANT**: This command may be run after clearing a session. This section provides essential context.
+
+### Directory Structure
+
+```
+thoughts/shared/
+├── plans/        # Implementation plans (YYYY-MM-DD-ENG-XXXX-description.md)
+├── handoffs/     # Handoff documents by ticket
+└── research/     # Research documents
+```
+
+### How to Invoke Slash Commands
+
+Use the **SlashCommand tool** to invoke other commands:
+- `/create_plan [ticket]` - Creates an implementation plan
+- `/implement_plan [plan_path]` - Implements a plan
+- `/commit` - Creates git commits
+- `/create_handoff` - Creates a handoff document
+
+### How to Spawn Sub-agents
+
+Use the **Task tool** with `subagent_type` parameter:
+- `general-purpose`: For implementation, testing, validation tasks
+- `codebase-analyzer`: To understand existing code
+- `codebase-locator`: To find relevant files
+
+### Key Tools
+
+- **SlashCommand**: Invoke other slash commands (e.g., `/create_plan`)
+- **TodoWrite**: Track orchestration progress
+- **Task**: Spawn sub-agents for phase execution
+
 ## Orchestrator Role
 
 **Your responsibilities:**

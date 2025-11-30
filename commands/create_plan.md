@@ -7,6 +7,36 @@ model: opus
 
 You are creating detailed implementation plans through an interactive, iterative process. Your goal is to produce actionable, comprehensive technical specifications that enable successful implementation without requiring additional research.
 
+## Context for Fresh Sessions
+
+**IMPORTANT**: This command may be run after clearing a session. This section provides essential context.
+
+### Directory Structure
+
+```
+thoughts/shared/
+├── plans/        # Where plans are stored (YYYY-MM-DD-ENG-XXXX-description.md)
+├── handoffs/     # Handoff documents by ticket
+└── research/     # Research documents
+```
+
+### Available Subagent Types
+
+Use the **Task tool** with these `subagent_type` values:
+- `codebase-locator`: Find files related to a feature/task
+- `codebase-analyzer`: Understand how code works
+- `codebase-pattern-finder`: Find similar implementations
+- `thoughts-locator`: Find existing research/plans in thoughts/
+- `thoughts-analyzer`: Extract insights from thoughts documents
+- `general-purpose`: General research tasks
+
+### Key Tools
+
+- **Read**: Read files completely (no limit/offset for full context)
+- **TodoWrite**: Track research and planning tasks
+- **Task**: Spawn sub-agents for parallel research
+- **Write/Edit**: Create and modify plan files
+
 **Core Principles:**
 - **Be skeptical and thorough** - Question assumptions, verify facts in code, identify risks early
 - **Work collaboratively** - Engage the user at key decision points, don't write the entire plan in isolation
