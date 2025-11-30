@@ -33,7 +33,29 @@ Construct the filepath following this pattern:
 - With ticket: `thoughts/shared/handoffs/ENG-2166/2025-01-08_13-55-22_ENG-2166_create-context-compaction.md`
 - Without ticket: `thoughts/shared/handoffs/general/2025-01-08_13-55-22_create-context-compaction.md`
 
-### 2. Write the Handoff Document
+### 2. Check for Implementation Plans
+
+Before writing the handoff, check if you are working from an implementation plan:
+
+**Search for active plans** (run in parallel):
+- Search `thoughts/shared/plans/` for plan documents matching the current ticket number
+- Check the current session context for any plan document paths that were provided at session start
+- Look for plan files in the current working directory or referenced in recent file reads
+
+**Determine plan status**:
+- **In Progress**: You are actively implementing steps from a plan but haven't completed all phases
+  - Note: Which phase/step you're on, what's completed, what remains
+- **Just Completed**: You finished implementing all steps from a plan this session
+  - Note: The plan is fully implemented, may need verification/testing
+- **No Plan**: Working without a formal implementation plan (ad-hoc work, bug fixes, etc.)
+
+**If a plan exists**, record:
+- Absolute path to the plan document
+- Current phase/step number and name
+- Completion percentage or remaining items
+- Any deviations from the plan
+
+### 3. Write the Handoff Document
 
 Create the handoff document at the filepath determined in step 1. Use the YAML frontmatter pattern followed by structured markdown content as shown in the template below.
 
@@ -53,6 +75,9 @@ status: complete
 last_updated: [Current date in YYYY-MM-DD format]
 last_updated_by: [Researcher name]
 type: implementation_strategy
+plan_path: [Absolute path to implementation plan, or null if no plan]
+plan_status: [in_progress | completed | null]
+plan_phase: [Current phase/step name, or null if no plan]
 ---
 
 # Handoff: ENG-XXXX {very concise description}
@@ -63,7 +88,25 @@ Describe each task you were working on with its current status:
 - **In Progress**: Tasks started but not completed (specify what's done and what remains)
 - **Planned/Discussed**: Tasks identified but not started
 
-For implementation work, specify which phase you're in and reference the plan document you're following. Include absolute file paths to any research or planning documents provided at session start.
+## Implementation Plan Status
+**Include this section if working from a plan. Omit if no plan exists.**
+
+**Plan Document**: `[absolute/path/to/plan.md]`
+**Status**: [In Progress | Just Completed]
+**Current Phase**: [Phase X: Phase Name] (if in progress)
+
+If **In Progress**:
+- List completed phases/steps with checkmarks
+- Indicate current phase and specific step within it
+- List remaining phases/steps
+- Note any blockers or deviations from the plan
+
+If **Just Completed**:
+- Confirm all phases are implemented
+- Note any verification/testing still needed
+- List any follow-up items identified during implementation
+
+**Why this matters**: The next agent needs to know exactly where implementation stands to avoid re-doing work or skipping steps.
 
 ## Critical References
 List 2-3 most important documents that define requirements, architecture, or design decisions. These are documents the next agent MUST read to understand constraints and requirements. Include absolute file paths.
@@ -115,7 +158,7 @@ Include any additional context that doesn't fit above categories:
 ```
 ---
 
-### 3. Provide Resume Instructions
+### 4. Provide Resume Instructions
 
 After creating the handoff document, respond to the user with the exact resume command using the actual filepath you created. Use this response format (do NOT include the XML tags in your actual response):
 

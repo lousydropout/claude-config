@@ -4,118 +4,418 @@ description: Implement technical plans from thoughts/shared/plans with verificat
 
 # Implement Plan
 
-Your goal is to implement an approved technical plan from `thoughts/shared/plans/`. These plans contain phases with specific changes and success criteria that you must execute and verify.
+Your goal is to implement an approved technical plan from `thoughts/shared/plans/` using an **orchestration pattern**. You act as the orchestrator, coordinating specialized sub-agents that handle implementation, testing, and validation. This keeps your context clean while sub-agents do the heavy lifting.
+
+## Orchestrator Role
+
+**Your responsibilities:**
+- Read and understand the complete plan
+- Track progress using TodoWrite
+- Spawn appropriate sub-agents for each task
+- Make decisions about issue severity (minor vs major)
+- Provide detailed progress reports to the user
+- Ensure quality gates are met before proceeding
+- Escalate major issues to the user
+
+**What you do NOT do directly:**
+- Implement code (sub-agents do this)
+- Run tests (sub-agents do this)
+- Fix issues (sub-agents do this)
+
+**Why this pattern:** Sub-agents get fresh context for each task, preventing the context accumulation issues that occur in long implementation sessions. You maintain the high-level view while they handle details.
 
 ## Getting Started
 
-When given a plan path, execute these steps in order:
+When given a plan path, execute these steps:
 
-1. **Read the complete plan** - Use the Read tool to load the entire plan file and identify any existing checkmarks (- [x]) that indicate completed work
-2. **Gather context** - Read the original ticket and all files mentioned in the plan. When reading files, always read them completely without limit/offset parameters because you need full context to understand how components interact
-3. **Create a todo list** - Use the TodoWrite tool to create a structured tracking list for all phases and major steps
-4. **Analyze the implementation** - Think deeply about how the pieces fit together before starting
-5. **Begin implementation** - Start executing the plan changes once you have complete understanding
+1. **Read the complete plan** - Use the Read tool to load the entire plan file
+2. **Identify completed work** - Check for existing checkmarks (- [x]) indicating previous progress
+3. **Gather file list** - Note all files mentioned in the plan that sub-agents will need
+4. **Create orchestration todo list** - Use TodoWrite with one item per phase
+5. **Begin orchestration** - Start spawning sub-agents for the first incomplete phase
 
 If no plan path is provided, ask the user for the specific plan file path.
 
-**Why this matters:** Reading files completely prevents missing critical context that could lead to incorrect implementations. The todo list helps track progress across potentially complex multi-phase plans.
+## Phase Execution Flow
 
-## Implementation Philosophy
+For each phase, execute this sequence **sequentially**:
 
-Plans are carefully designed roadmaps, but codebases evolve and you may encounter situations not anticipated in the plan. Your responsibilities are:
+```
+┌─────────────────────────────────────────────────────┐
+│ 1. Spawn Implementer    → Makes code changes        │
+│         ↓                                           │
+│ 2. Spawn Tester         → Runs tests, finds gaps    │
+│         ↓                                           │
+│ 3. Spawn Validator      → Checks against plan       │
+│         ↓                                           │
+│ 4. Evaluate Results                                 │
+│    ├── All pass → Report & proceed to next phase   │
+│    ├── Minor issues → Spawn Fixer, then re-test    │
+│    └── Major issues → Escalate to user             │
+└─────────────────────────────────────────────────────┘
+```
 
-1. **Follow the plan's intent** - Understand the goal of each phase and adapt your implementation to achieve that goal even if specific details differ from what the plan describes
-2. **Complete phases sequentially** - Fully implement and verify each phase before proceeding to the next one, as later phases often depend on earlier work
-3. **Maintain codebase consistency** - Ensure your changes align with existing patterns, conventions, and architecture throughout the codebase
-4. **Track progress explicitly** - Use the Edit tool to update checkboxes (- [ ] to - [x]) in the plan file itself as you complete each section
+### Step 1: Spawn Phase Implementer
 
-**Why this matters:** Sequential phase completion prevents cascading errors, and tracking progress in the plan file creates a shared record that persists across sessions.
+Launch a sub-agent to implement the phase:
 
-### Handling Mismatches
+```
+Task tool with subagent_type: "general-purpose"
+```
 
-When you discover that reality doesn't match the plan (e.g., a file doesn't exist, a function has a different signature, or an approach won't work):
+**Prompt template:**
+```
+# Phase Implementation Task
 
-1. **Stop implementation immediately** - Don't try to work around the issue without understanding it
-2. **Analyze the root cause** - Think deeply about why this mismatch exists and what it means for the plan
-3. **Communicate clearly** - Present the issue to the user using this exact format:
+## Objective
+Implement Phase [N]: [Phase Name] from the implementation plan.
+
+## Plan Document
+[Paste the FULL plan content]
+
+## Current Phase Details
+[Paste the specific phase section]
+
+## Files to Read First
+Read these files completely before making changes:
+- [List all files mentioned in this phase]
+- [Include dependencies and shared utilities]
+
+## Implementation Requirements
+1. Follow the plan's technical approach exactly
+2. Add tests for all new functionality:
+   - Unit tests for new functions/methods
+   - Integration tests for component interactions
+   - Edge case tests for boundary conditions
+3. Ensure code follows existing codebase patterns
+4. Update plan file checkboxes (- [ ] to - [x]) as you complete items
+
+## Success Criteria
+[Paste success criteria from plan for this phase]
+
+## Output Required
+Provide a structured report:
+1. **Changes Made**: List each file with line ranges and description
+   Format: `path/to/file.ts:45-67 - Description of change`
+2. **Tests Added**: List new tests and what they cover
+3. **Deviations**: Any differences from plan and reasoning
+4. **Issues**: Any problems encountered
+5. **Criteria Status**: Confirmation each success criterion is met
+```
+
+### Step 2: Spawn Phase Tester
+
+After implementation, launch a sub-agent to verify tests:
+
+```
+Task tool with subagent_type: "general-purpose"
+```
+
+**Prompt template:**
+```
+# Phase Testing Task
+
+## Objective
+Verify test coverage and run all tests for Phase [N]: [Phase Name].
+
+## Implementation Summary
+The implementer reported these changes:
+[Paste summary from implementer]
+
+## Testing Requirements
+
+### 1. Run Test Suite
+- Execute: `make test` (or project-specific command)
+- Capture all output including failures
+- Note any flaky tests
+
+### 2. Analyze Coverage
+For each change in the implementation summary:
+- Verify adequate tests exist
+- Check edge cases and error paths
+- Identify untested code paths
+
+### 3. Categorize Test Gaps
+
+**Minor gaps** (quick to add):
+- Simple utility function tests
+- Getter/setter tests
+- Basic validation tests
+
+**Major gaps** (need discussion):
+- Integration tests across components
+- Tests requiring complex setup
+- Performance/load tests
+- Security-sensitive code paths
+
+## Output Required
+1. **Test Results**: Pass/fail counts, any failures with details
+2. **Minor Gaps**: List with suggested test cases
+3. **Major Gaps**: List with explanation of complexity
+4. **Assessment**: PASS / MINOR_ISSUES / MAJOR_ISSUES
+```
+
+### Step 3: Spawn Phase Validator
+
+After testing, launch a sub-agent to validate against the plan:
+
+```
+Task tool with subagent_type: "general-purpose"
+```
+
+**Prompt template:**
+```
+# Phase Validation Task
+
+## Objective
+Validate Phase [N]: [Phase Name] implementation matches plan requirements.
+
+## Plan Document
+[Paste FULL plan content]
+
+## Phase Requirements
+[Paste specific phase section]
+
+## Implementation Summary
+[Paste summary from implementer]
+
+## Test Results
+[Paste summary from tester]
+
+## Validation Checklist
+
+### Completeness
+- [ ] All phase items implemented
+- [ ] Plan checkboxes accurately marked
+- [ ] No requirements skipped
+
+### Correctness
+- [ ] Matches technical approach in plan
+- [ ] Follows specified patterns
+- [ ] Edge cases handled
+
+### Quality
+- [ ] Tests exist for new functionality
+- [ ] Error handling appropriate
+- [ ] Consistent with codebase style
+
+### Success Criteria
+[List each criterion with status and evidence]
+
+## Output Required
+1. **Status**: PASSED / FAILED
+2. **Unmet Requirements**: List any gaps
+3. **Deviations**: Beneficial vs problematic
+4. **Recommendations**: Fixes needed if FAILED
+```
+
+### Step 4: Evaluate and Decide
+
+Based on sub-agent reports:
+
+**All pass:** Update todo list, report to user, proceed to next phase.
+
+**Minor issues only:**
+- Spawn fixer sub-agent (see below)
+- Re-run tester and validator after fixes
+- Maximum 2 fix cycles, then escalate
+
+**Major issues:**
+- Stop execution immediately
+- Report full context to user
+- Wait for user guidance before continuing
+
+**Fixer prompt template:**
+```
+# Phase Fix Task
+
+## Objective
+Fix minor issues in Phase [N]: [Phase Name].
+
+## Issues to Fix
+[List specific issues from tester/validator]
+
+## Files to Modify
+[List specific files]
+
+## Constraints
+- ONLY fix listed issues
+- Do NOT refactor unrelated code
+- Add missing tests identified as "minor gaps"
+- Run tests after fixes
+
+## Output Required
+1. **Fixes Applied**: file:line references
+2. **Tests Added**: List new tests
+3. **Test Results**: Confirmation all pass
+4. **Unfixable Issues**: Anything that needs escalation
+```
+
+## Progress Reporting
+
+After each phase completes, provide a **detailed summary** to the user:
+
+```
+═══════════════════════════════════════════════════════════════
+Phase [N] Complete: [Phase Name]
+═══════════════════════════════════════════════════════════════
+
+Changes Made:
+• src/components/UserForm.tsx:45-67 - Added email validation
+• src/components/UserForm.tsx:89-102 - Error state handling
+• src/utils/validation.ts:12-28 - New validateEmail() function
+• src/api/users.ts:156-178 - Updated createUser endpoint
+
+Tests Added:
+• src/__tests__/validation.test.ts - 4 tests for validateEmail()
+• src/__tests__/UserForm.test.tsx - 3 tests for error states
+• Coverage: All new functions tested, edge cases covered
+
+Test Results:
+• 48/48 passing (6 new tests added)
+• No regressions detected
+
+Validation:
+• ✓ All success criteria met
+• ✓ Implementation matches plan approach
+• Note: Used Zod instead of manual validation (beneficial - matches codebase pattern)
+
+───────────────────────────────────────────────────────────────
+Proceeding to Phase [N+1]: [Next Phase Name]
+───────────────────────────────────────────────────────────────
+```
+
+This transparency ensures the user:
+- Knows exactly what changed
+- Can verify tests were added
+- Sees any deviations from plan
+- Can intervene if something looks wrong
+
+## Issue Escalation
+
+### Minor Issues (Auto-Fix)
+- Missing tests for simple utilities
+- Minor style inconsistencies
+- Simple null checks
+- Documentation gaps
+- Basic validation oversights
+
+### Major Issues (Escalate to User)
+- Architectural deviations from plan
+- Missing tests for complex logic
+- Security concerns
+- Performance problems
+- Integration failures
+- Unclear requirements
+- Changes affecting other features
+
+**Format for escalation:**
+```
+═══════════════════════════════════════════════════════════════
+⚠️  Major Issue - User Input Required
+═══════════════════════════════════════════════════════════════
+
+Phase: [N] - [Phase Name]
+Issue Type: [Architectural / Security / Integration / etc.]
+
+Problem:
+[Clear description of what went wrong]
+
+Evidence:
+[Specific errors, test failures, or validator findings]
+
+Impact:
+[What this affects and why it matters]
+
+Options:
+1. [Option A with trade-offs]
+2. [Option B with trade-offs]
+3. [Other suggestions]
+
+How would you like to proceed?
+═══════════════════════════════════════════════════════════════
+```
+
+**When in doubt, escalate.** It's better to ask than to auto-fix incorrectly.
+
+## Handling Plan Mismatches
+
+When reality doesn't match the plan (file doesn't exist, function has different signature, approach won't work):
+
+1. **Stop immediately** - Don't work around without understanding
+2. **Analyze root cause** - Why does this mismatch exist?
+3. **Escalate to user** with this format:
 
 ```
 Issue in Phase [N]:
-Expected: [what the plan says should exist or happen]
-Found: [the actual situation in the codebase]
-Why this matters: [explanation of how this affects the implementation]
+Expected: [what the plan says]
+Found: [actual situation]
+Impact: [how this affects implementation]
 
 How should I proceed?
 ```
 
-Your judgment and problem-solving are valuable - use them to navigate complexity while keeping the user informed.
+## Resuming Incomplete Work
 
-## Verification Approach
+If the plan has existing checkmarks (- [x]):
 
-After implementing each phase, execute verification in this order:
+1. **Trust completed work** - Assume checked items were done correctly
+2. **Find starting point** - Locate first unchecked item
+3. **Verify if needed** - Only re-examine previous work if you find inconsistencies
 
-1. **Run automated checks** - Execute the success criteria checks specified in the plan (typically `make check test` or similar commands that run linters, type checkers, and test suites)
-2. **Fix all issues** - Address any failures or errors before proceeding to the next phase, as proceeding with broken tests creates technical debt and risks
-3. **Update progress tracking** - Use the Edit tool to check off completed items (- [ ] to - [x]) in both the plan file and your TodoWrite list
-4. **Request manual verification** - After automated checks pass, pause and inform the user using this exact format:
+## Final Completion
+
+After all phases complete:
+
+1. **Spawn final validator** for the entire plan
+2. **Report to user:**
 
 ```
-Phase [N] Complete - Ready for Manual Verification
+═══════════════════════════════════════════════════════════════
+Implementation Complete: [Feature/Ticket Name]
+═══════════════════════════════════════════════════════════════
 
-Automated verification passed:
-- [List specific automated checks that passed, e.g., "make check", "npm test"]
+Phases Completed:
+✓ Phase 1: [Name]
+✓ Phase 2: [Name]
+✓ Phase 3: [Name]
 
-Please perform the manual verification steps listed in the plan:
-- [Copy the exact manual verification items from the plan]
+Total Changes:
+• [X] files modified
+• [Y] new tests added
+• All automated checks passing
 
-Reply when manual testing is complete so I can proceed to Phase [N+1].
+Manual Testing Required:
+- [ ] [Manual test item 1 from plan]
+- [ ] [Manual test item 2 from plan]
+
+Ready for: Code review and manual testing
+
+Would you like me to:
+• Create a commit? (/commit)
+• Create a PR? (gh pr create)
+• Run additional validation?
+═══════════════════════════════════════════════════════════════
 ```
 
-**Why this matters:** Automated checks catch regressions, but manual verification ensures the changes work correctly from a user perspective. Pausing for verification prevents building on faulty foundations.
+## Context Management
 
-### Multi-Phase Execution
+**What to pass to sub-agents:**
+- Always: Full plan document
+- Always: All files mentioned in current phase
+- Always: Clear success criteria
+- For validators: Summaries from implementer and tester
+- For fixers: Specific issue list only
 
-If the user explicitly instructs you to execute multiple phases consecutively (e.g., "implement phases 1-3"), skip the manual verification pause until after the final phase. Otherwise, assume you should implement one phase at a time with verification between each.
-
-**Important:** Never check off manual testing items (- [ ] to - [x]) until the user explicitly confirms they completed them successfully.
-
-
-## If You Get Stuck
-
-When something isn't working as expected, follow this debugging process:
-
-1. **Ensure complete understanding** - Read and analyze all relevant code files completely (no limit/offset parameters). Missing context is often the root cause of implementation issues.
-2. **Consider codebase evolution** - Check if the codebase has changed since the plan was written (look at git history, recent commits, or modified files).
-3. **Communicate the blocker** - Present the issue clearly to the user and ask for guidance using the mismatch format shown earlier.
-
-**Why this matters:** Thorough code reading often reveals solutions that aren't obvious from the plan alone. The codebase is the source of truth, not the plan.
-
-### Using Parallel Tool Calls
-
-When you need to gather information or make changes that have no dependencies between them, execute all independent tool calls in parallel within a single response. For example:
-- Reading multiple unrelated files: make all Read calls together
-- Running independent verification commands: execute them in parallel with multiple Bash calls
-- Searching for different patterns: run multiple Grep calls simultaneously
-
-**Why this matters:** Parallel execution significantly reduces latency and speeds up implementation.
-
-## Resuming Work
-
-If the plan file contains existing checkmarks (- [x]):
-
-1. **Trust completed work** - Assume that checked-off items were properly implemented
-2. **Find your starting point** - Locate the first unchecked item (- [ ]) and begin there
-3. **Verify only when necessary** - Only re-examine previous work if you discover something inconsistent or broken
-
-**Why this matters:** Plans may span multiple sessions. Trusting completed work maintains momentum and respects previous effort.
+**What NOT to pass:**
+- Previous phases' detailed logs
+- Full conversation history
+- Files not relevant to current phase
 
 ## Core Principles
 
-Remember these guiding principles throughout implementation:
-
-- **You're solving a problem, not just checking boxes** - Keep the end goal and user value in mind
-- **Be autonomous and persistent** - Work through challenges methodically rather than giving up easily
-- **Implement changes, don't just suggest them** - Execute the plan with actual code changes
-- **Maintain forward momentum** - Complete phases fully rather than leaving partial work
-
-Your goal is successful implementation of the technical plan that achieves the desired functionality and passes all verification criteria.
+- **Orchestrate, don't implement** - You coordinate; sub-agents execute
+- **Report transparently** - Users should never wonder what happened
+- **Escalate appropriately** - Auto-fix minor issues, ask about major ones
+- **Maintain momentum** - Complete phases fully before proceeding
+- **Trust but verify** - Sub-agents do the work, you verify the results

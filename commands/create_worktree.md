@@ -84,28 +84,43 @@ Worktree path: ~/wt/REPO_NAME/SHORT_NAME
 Branch name: BRANCH_NAME
 Plan file path: thoughts/shared/plans/PLAN_NAME.md
 
-You can now:
+Next steps:
 1. Navigate to the worktree: cd ~/wt/REPO_NAME/SHORT_NAME
 2. Start a new Claude Code session there
-3. Run /implement_plan thoughts/shared/plans/PLAN_NAME.md
+3. Choose an implementation approach (see options below)
 
-Or I can implement the plan in this session if you prefer.
+Or I can start implementation in this session if you prefer.
 ```
 
 Wait for user confirmation or feedback.
 
 # Step 6: Implementation Options
 
-After creating the worktree, the user can either:
+After creating the worktree, choose the appropriate command:
 
-**Option A: Implement in current session**
-- Use `/implement_plan thoughts/shared/plans/PLAN_NAME.md` to start implementation
-- Changes will be made in the worktree directory
+**Option A: Plan already exists** → `/implement_plan`
+```
+/implement_plan thoughts/shared/plans/PLAN_NAME.md
+```
+- Uses orchestration pattern with sub-agents
+- Sub-agents handle implementation, testing, and validation
+- Progress reported after each phase
+- Major issues escalated to user
 
-**Option B: Start a new session in the worktree**
-- Navigate to the worktree directory
-- Start a fresh Claude Code session
-- This keeps the current session's context clean
+**Option B: No plan yet** → `/oneshot_plan`
+```
+/oneshot_plan [ticket_number]
+```
+- Creates plan first, then implements
+- Same orchestration pattern as /implement_plan
+- Good for starting fresh from a ticket
+
+**About the orchestration pattern:**
+Both commands use sub-agents for implementation, which means:
+- Fresh context for each phase (no context accumulation)
+- You stay informed through detailed progress reports
+- No manual session clearing needed between phases
+- Major issues are escalated for your input
 
 # Important Notes
 
