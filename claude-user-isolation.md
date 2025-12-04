@@ -130,7 +130,40 @@ sudo -u claude ln -s /home/lousydropout/.local/bin/claude /home/claude/.local/bi
 
 (Replace `/home/lousydropout` with your actual home directory path.)
 
-### 7. Add Wrapper Function to .bashrc
+### 7. Configure Dev Tools for Claude User
+
+Many development tools (nvm, bun, cargo, pyenv) are installed per-user. Install them directly for the claude user to avoid permission issues.
+
+**nvm (Node.js):**
+```bash
+# Install nvm for claude user
+sudo -u claude bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash'
+
+# Install LTS node
+sudo -u claude bash -c 'source ~/.nvm/nvm.sh && nvm install --lts'
+```
+
+The nvm install script adds lines to the end of `.bashrc`, but they need to be moved **before** the non-interactive guard for Claude Code to use them. Edit `/home/claude/.bashrc` to move the nvm config to the top:
+
+```bash
+# Load nvm before the non-interactive guard so it works in Claude Code
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+# ... rest of .bashrc
+```
+
+**Important:** nvm reads `~/.npmrc` from both users. If your main user has `~/.npmrc`, add group read permission:
+```bash
+chmod g+r ~/.npmrc
+```
+
+### 8. Add Wrapper Function to .bashrc
 
 Add this to your `~/.bashrc`:
 
@@ -189,7 +222,7 @@ The function:
 - Sets matching files to `600` (owner-only) with verbose output
 - Runs Claude as the `claude` user with login shell (`-l`) and `umask 002`
 
-### 8. (Optional) Set Your Umask
+### 9. (Optional) Set Your Umask
 
 If your files are currently more restrictive, you may want to ensure new files you create are group-accessible:
 
