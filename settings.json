@@ -57,5 +57,29 @@
     "defaultMode": "acceptEdits"
   },
   "enableAllProjectMcpServers": false,
-  "alwaysThinkingEnabled": false
+  "alwaysThinkingEnabled": false,
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "chmod 660 \"$(cat | jq -r '.tool_input.file_path')\"",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat | jq -r 'select(.tool_input.command | test(\"^mkdir\")) | .tool_input.command' | grep -oE '/[^ ]+' | xargs -r -I{} chmod 775 {}",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
 }
