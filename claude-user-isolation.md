@@ -161,6 +161,7 @@ restricted-claude() {
       [[ -z "$pattern" || "$pattern" == \#* ]] && continue
       find . -name "$pattern" -type f \
         -not -path '*/.git/*' \
+        -not -path '*/.ssh/*' \
         -not -path '*/dist/*' \
         -not -path '*/build/*' \
         -not -path '*/node_modules/*' \
@@ -184,7 +185,7 @@ The function:
 - Pre-creates `.claude/` directory (770) and `settings.local.json` (660) with group permissions
 - Reads patterns from the config file (supports wildcards)
 - Recursively finds matching files in current directory
-- Excludes dependency/build directories for performance (`.git`, `node_modules`, `venv`, `.venv`, `target`)
+- Excludes sensitive/build directories (`.git`, `.ssh`, `node_modules`, `venv`, `.venv`, `target`)
 - Sets matching files to `600` (owner-only) with verbose output
 - Runs Claude as the `claude` user with login shell (`-l`) and `umask 002`
 
@@ -297,9 +298,23 @@ Then add your patterns (one per line, wildcards supported).
 
 ### Files in excluded directories not protected
 
-The wrapper skips `.git`, `node_modules`, `venv`, `.venv`, and `target` for performance. If you need to protect files there, either:
+The wrapper skips `.git`, `.ssh`, `node_modules`, `venv`, `.venv`, and `target`. The `.ssh` exclusion is critical - SSH requires strict permissions on its files and will refuse to work if they're modified. If you need to protect files in other excluded directories, either:
 - Manually `chmod 600` them, or
 - Remove the corresponding `-not -path` line from the function
+
+### SSH permissions broken after running claude in home directory
+
+If you ran `claude` in your home directory and SSH stops working with "Bad owner or permissions" errors, restore SSH permissions:
+
+```bash
+chmod 700 ~/.ssh
+find ~/.ssh -type f -exec chmod 600 {} \;
+find ~/.ssh -type d -exec chmod 700 {} \;
+chmod 644 ~/.ssh/*.pub 2>/dev/null
+chmod 644 ~/.ssh/known_hosts 2>/dev/null
+```
+
+**Prevention:** Avoid running `claude` directly in your home directory. The wrapper's pattern matching could affect dotfiles. Run it in project directories instead.
 
 ### "claude command not found" or PATH warnings
 
