@@ -1,72 +1,51 @@
 ---
-description: Create git commits with user approval and no Claude attribution
+description: Create git commits with user approval (context-efficient)
 ---
 
 # Commit Changes
 
-Your task is to create git commits for the changes made during this session. The user wants you to take ownership of the commit process while maintaining their authorship.
+Spawn the `commit-handler` sub-agent to analyze changes and create a commit plan.
 
-## Why This Matters
+**Why sub-agent**: The analysis phase (git status, diff, log parsing) generates significant context. Running it in a sub-agent keeps the main context clean.
 
-You have the full context of what was accomplished in this session. The user trusts your judgment to organize changes into logical commits with clear messages. Your goal is to create a clean git history that accurately represents the work done.
+## Instructions
 
-## Step 1: Analyze Changes (Make Parallel Calls)
+### Step 1: Get Commit Plan
 
-Execute these git commands in parallel to understand the current state:
-- Run `git status` to see all staged and unstaged changes
-- Run `git diff` to view the actual modifications
-- Run `git log --oneline -5` to see recent commit style
+Use the Task tool with:
+- `subagent_type`: `commit-handler`
+- `prompt`: Include context about the session's work:
+  - What tasks were completed
+  - What files were changed and why
+  - Any grouping preferences
 
-While reviewing these results, also consider the conversation history to understand the purpose and scope of changes.
-
-## Step 2: Plan Commit Strategy
-
-Based on your analysis, determine:
-- **Logical grouping**: Which files belong together based on their purpose (e.g., feature changes separate from test updates, frontend separate from backend)
-- **Atomic commits**: Each commit should represent one complete, coherent change
-- **Commit messages**: Write in imperative mood ("Add feature" not "Added feature"), focus on WHY the change was made and WHAT problem it solves
-
-## Step 3: Present Plan for Approval
-
-Show the user your commit strategy in this format:
-
+Example:
 ```
-I plan to create [N] commit(s):
+Task tool:
+  subagent_type: commit-handler
+  prompt: |
+    Analyze changes and create a commit plan.
 
-Commit 1: [Commit message]
-Files: [list of files]
-
-Commit 2: [Commit message]
-Files: [list of files]
-
-Shall I proceed with these commits?
+    Session context:
+    - Task: [what was worked on]
+    - Key changes: [summary of changes]
 ```
 
-This preview ensures alignment before making irreversible changes.
+### Step 2: Present Plan to User
 
-## Step 4: Execute Commits
+Show the sub-agent's commit plan to the user and ask for approval:
+- Display the recommended commits with files and messages
+- Ask: "Shall I proceed with these commits?"
 
-Once the user confirms:
-1. Add specific files using `git add [file1] [file2]` (specify exact files, never use `-A` or `.` to maintain precise control)
-2. Create each commit with `git commit -m "message"`
-3. Run `git log --oneline -n [number]` to show the created commits
-4. Confirm completion to the user
+### Step 3: Execute (After Approval)
 
-## Commit Message Format
+Once user confirms, execute the git commands from the plan:
+1. `git add [files]` for each commit
+2. `git commit -m "[message]"`
+3. Show `git log --oneline -n [N]` to confirm
 
-Write commit messages as the user would write them:
-- Use imperative mood: "Add", "Fix", "Update", "Remove"
-- First line: concise summary (50-72 characters)
-- Optional body: explain context and reasoning if the change is complex
-- Attribute authorship solely to the user (see Critical Rules below)
+## Critical Rules
 
-## Critical Rules - Authorship
-
-The commits must appear as if the user created them directly:
-- Write commit messages in the user's voice
-- Include ONLY the core commit message
-- Omit any AI attribution, signatures, or co-author tags
-- Do not add "Generated with Claude" or similar phrases
-- Do not add "Co-Authored-By: Claude" or any co-author lines
-
-**Why**: The user made the decisions and directed the work. Your role is to execute their intent, not to claim co-authorship. Clean git history maintains professional standards and avoids cluttering the repository with tool-specific metadata.
+- Always get user approval before executing commits
+- Never use `git add -A` or `git add .`
+- No AI attribution in commit messages
