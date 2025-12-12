@@ -56,7 +56,6 @@
     "defaultMode": "acceptEdits"
   },
   "enableAllProjectMcpServers": false,
-  "alwaysThinkingEnabled": false,
   "hooks": {
     "PreCompact": [
       {
@@ -69,5 +68,6 @@
         ]
       }
     ]
-  }
+  },
+  "alwaysThinkingEnabled": false
 }
