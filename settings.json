@@ -7,19 +7,7 @@
       "Bash(./hack/spec_metadata.sh)",
       "Bash(hack/spec_metadata.sh)",
       "Bash(bash hack/spec_metadata.sh)",
-      "Bash(git status:*)",
-      "Bash(git diff:*)",
-      "Bash(git log:*)",
-      "Bash(git branch:*)",
-      "Bash(git checkout:*)",
-      "Bash(git pull:*)",
-      "Bash(git add:*)",
-      "Bash(git stash:*)",
-      "Bash(git rebase:*)",
-      "Bash(git merge:*)",
-      "Bash(git fetch:*)",
-      "Bash(git reset:*)",
-      "Bash(git config:*)",
+      "Bash(git:*)",
       "Bash(node:*)",
       "Bash(bun:*)",
       "Bash(bunx:*)",
@@ -46,12 +34,14 @@
       "Bash(less:*)",
       "Bash(cat:*)",
       "Bash(head:*)",
-      "Bash(tail:*)"
+      "Bash(tail:*)",
+      "mcp__playwright__*"
     ],
-    "deny": [],
-    "ask": [
-      "Bash(git commit:*)",
+    "deny": [
       "Bash(git push:*)"
+    ],
+    "ask": [
+      "Bash(git commit:*)"
     ],
     "defaultMode": "acceptEdits"
   },
