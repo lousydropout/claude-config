@@ -14,8 +14,17 @@ You will resume work from a handoff document through an interactive analysis and
 
 ### Directory Structure
 
-The project uses a `thoughts/` directory hierarchy for documentation and planning:
+**Agent OS (check first if referenced in handoff):**
+```
+agent-os/specs/[spec-name]/
+├── spec.md              # Current specification
+├── tasks.md             # Task breakdown with checkboxes
+└── planning/
+    ├── requirements.md  # Requirements document
+    └── visuals/         # Mockups, screenshots
+```
 
+**Thoughts (fallback):**
 ```
 thoughts/
 ├── shared/                    # Shared across all users/sessions
@@ -46,8 +55,6 @@ You have access to these key tools:
 - `codebase-locator`: Find files related to a feature/task
 - `codebase-analyzer`: Understand how code works
 - `codebase-pattern-finder`: Find similar implementations to model after
-- `thoughts-locator`: Find relevant documents in thoughts/
-- `thoughts-analyzer`: Extract insights from thoughts documents
 - `general-purpose`: General-purpose agent for complex tasks
 - `Explore`: Quick codebase exploration
 
@@ -76,10 +83,13 @@ When this command is invoked, follow the appropriate path based on the provided 
 If the user provided a direct path to a handoff document (e.g., `thoughts/shared/handoffs/ENG-XXXX/2025-01-15_14-30-00_ENG-XXXX_description.md`):
 
 1. **Immediately read the handoff document completely** using Read tool without limit/offset parameters (reading the full document is critical for understanding complete context)
-2. **Immediately read all linked research and plan documents** mentioned under `thoughts/shared/plans` or `thoughts/shared/research`. Read these files directly yourself - these are critical foundation documents that you need to fully understand, not delegate to sub-agents
-3. **Begin parallel context gathering** by making multiple independent Read calls simultaneously for all artifact files mentioned in the handoff
-4. **Synthesize the gathered context** and propose a specific course of action to the user
-5. **Confirm the approach** with the user or ask clarifying questions about priorities
+2. **Check handoff frontmatter for Agent OS spec reference** (`agent_os_spec` field):
+   - If present, read `agent-os/specs/[spec-name]/spec.md` and `agent-os/specs/[spec-name]/tasks.md`
+   - Compare task checkboxes in `tasks.md` with handoff's recorded progress to detect changes since handoff
+3. **Read all linked research and plan documents** mentioned under `thoughts/shared/plans` or `thoughts/shared/research`. Read these files directly yourself - these are critical foundation documents that you need to fully understand, not delegate to sub-agents
+4. **Begin parallel context gathering** by making multiple independent Read calls simultaneously for all artifact files mentioned in the handoff
+5. **Synthesize the gathered context** and propose a specific course of action to the user
+6. **Confirm the approach** with the user or ask clarifying questions about priorities
 
 ### Path 2: Ticket Number Provided
 
@@ -91,10 +101,13 @@ If the user provided a ticket number (format: `ENG-XXXX`, `PROJ-YYYY`, etc.):
    - **Exactly one file**: Proceed with that single handoff document
    - **Multiple files**: Select the most recent handoff based on the filename timestamp format `YYYY-MM-DD_HH-MM-SS` (24-hour format)
 4. **Read the selected handoff completely** using Read tool without limit/offset parameters
-5. **Read all linked research and plan documents** directly yourself (under `thoughts/shared/plans` or `thoughts/shared/research`) - these are foundation documents requiring your full understanding
-6. **Gather additional context** by reading artifact files mentioned in the handoff (make parallel Read calls for independent files)
-7. **Propose a specific course of action** to the user based on the handoff's next steps
-8. **Confirm the approach** with the user or ask clarifying questions
+5. **Check handoff frontmatter for Agent OS spec reference** (`agent_os_spec` field):
+   - If present, read `agent-os/specs/[spec-name]/spec.md` and `agent-os/specs/[spec-name]/tasks.md`
+   - Compare task checkboxes in `tasks.md` with handoff's recorded progress to detect changes since handoff
+6. **Read all linked research and plan documents** directly yourself (under `thoughts/shared/plans` or `thoughts/shared/research`) - these are foundation documents requiring your full understanding
+7. **Gather additional context** by reading artifact files mentioned in the handoff (make parallel Read calls for independent files)
+8. **Propose a specific course of action** to the user based on the handoff's next steps
+9. **Confirm the approach** with the user or ask clarifying questions
 
 ### Path 3: No Parameters Provided
 
@@ -163,6 +176,12 @@ or using a ticket number to resume from the most recent handoff for that ticket:
 
    ```
    I've analyzed the handoff from [date] by [previous session]. Here's the current situation:
+
+   **Spec/Plan Status:** [Include if Agent OS spec or thoughts/ plan referenced]
+   - Source: [agent-os/specs/[name]/ OR thoughts/shared/plans/[file]]
+   - Tasks completed at handoff: [X]
+   - Tasks completed now: [Y] (if changed, note what was done since handoff)
+   - Remaining tasks: [Z]
 
    **Original Tasks:**
    - [Task 1]: [Status from handoff] → [Current verification status]

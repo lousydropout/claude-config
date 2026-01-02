@@ -14,6 +14,17 @@ Create a handoff document that enables seamless work transfer to another agent i
 
 ### Directory Structure
 
+**Agent OS (check first):**
+```
+agent-os/specs/[current-spec]/
+├── spec.md              # Current specification
+├── tasks.md             # Task breakdown with checkboxes
+└── planning/
+    ├── requirements.md  # Requirements document
+    └── visuals/         # Mockups, screenshots
+```
+
+**Thoughts (fallback):**
 ```
 thoughts/shared/
 ├── handoffs/     # Handoff documents organized by ticket
@@ -66,23 +77,35 @@ mkdir -p thoughts/shared/handoffs/ENG-XXXX  # or 'general' if no ticket
 - With ticket: `thoughts/shared/handoffs/ENG-2166/2025-01-08_13-55-22_ENG-2166_create-context-compaction.md`
 - Without ticket: `thoughts/shared/handoffs/general/2025-01-08_13-55-22_create-context-compaction.md`
 
-### 2. Check for Implementation Plans
+### 2. Check for Active Specs/Plans
 
-Before writing the handoff, check if you are working from an implementation plan:
+Before writing the handoff, check if you are working from an Agent OS spec or implementation plan:
 
-**Search for active plans** (run in parallel):
+**Check Agent OS first** (run in parallel):
+- Check if `agent-os/specs/` directory exists
+- If it does, list subdirectories to find active specs
+- For each active spec, read `spec.md` and `tasks.md` to determine status
+- Look for checked `[x]` vs unchecked `[ ]` tasks to determine progress
+
+**Fall back to thoughts/ plans**:
 - Search `thoughts/shared/plans/` for plan documents matching the current ticket number
 - Check the current session context for any plan document paths that were provided at session start
 - Look for plan files in the current working directory or referenced in recent file reads
 
-**Determine plan status**:
-- **In Progress**: You are actively implementing steps from a plan but haven't completed all phases
-  - Note: Which phase/step you're on, what's completed, what remains
-- **Just Completed**: You finished implementing all steps from a plan this session
-  - Note: The plan is fully implemented, may need verification/testing
-- **No Plan**: Working without a formal implementation plan (ad-hoc work, bug fixes, etc.)
+**Determine status**:
+- **In Progress**: Actively implementing - note which tasks/phases are done vs remaining
+- **Just Completed**: All tasks/phases finished - may need verification/testing
+- **No Spec/Plan**: Working without a formal spec or plan (ad-hoc work, bug fixes, etc.)
 
-**If a plan exists**, record:
+**Record the following** (whichever source applies):
+
+For Agent OS specs:
+- Spec directory path (e.g., `agent-os/specs/user-auth/`)
+- Completed tasks (count and list)
+- Remaining tasks (count and list)
+- Current task group being worked on
+
+For thoughts/ plans:
 - Absolute path to the plan document
 - Current phase/step number and name
 - Completion percentage or remaining items
@@ -108,7 +131,10 @@ status: complete
 last_updated: [Current date in YYYY-MM-DD format]
 last_updated_by: [Researcher name]
 type: implementation_strategy
-plan_path: [Absolute path to implementation plan, or null if no plan]
+agent_os_spec: [Spec directory path, or null if not using Agent OS]
+agent_os_tasks_completed: [Count of completed tasks, or null]
+agent_os_tasks_remaining: [Count of remaining tasks, or null]
+plan_path: [Absolute path to thoughts/ plan, or null if no plan]
 plan_status: [in_progress | completed | null]
 plan_phase: [Current phase/step name, or null if no plan]
 ---
@@ -121,8 +147,28 @@ Describe each task you were working on with its current status:
 - **In Progress**: Tasks started but not completed (specify what's done and what remains)
 - **Planned/Discussed**: Tasks identified but not started
 
-## Implementation Plan Status
-**Include this section if working from a plan. Omit if no plan exists.**
+## Spec/Plan Status
+**Include this section if working from an Agent OS spec or thoughts/ plan. Omit if neither exists.**
+
+### If using Agent OS spec:
+
+**Spec Directory**: `agent-os/specs/[spec-name]/`
+**Status**: [In Progress | Just Completed]
+
+**Task Progress**:
+- Completed: [X] tasks
+- Remaining: [Y] tasks
+- Current task group: [e.g., "API Layer - Task Group 2"]
+
+**Completed Tasks**:
+- [x] Task 1.0: Description
+- [x] Task 1.1: Description
+
+**Remaining Tasks**:
+- [ ] Task 2.0: Description
+- [ ] Task 2.1: Description
+
+### If using thoughts/ plan:
 
 **Plan Document**: `[absolute/path/to/plan.md]`
 **Status**: [In Progress | Just Completed]

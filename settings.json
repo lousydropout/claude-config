@@ -56,7 +56,6 @@
     "defaultMode": "acceptEdits"
   },
   "enableAllProjectMcpServers": false,
-  "alwaysThinkingEnabled": false,
   "hooks": {
     "PreCompact": [
       {
@@ -69,5 +68,15 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "typescript-lsp@claude-plugins-official": true,
+    "ralph-wiggum@claude-plugins-official": true,
+    "learning-output-style@claude-plugins-official": true
+  },
+  "alwaysThinkingEnabled": true,
+  "statusLine": {
+    "type": "command",
+    "command": "input=$(cat); cwd=$(echo \"$input\" | jq -r '.workspace.current_dir'); short_dir=$(echo \"$cwd\" | sed \"s|^$HOME|~|\"); if [[ $(echo \"$short_dir\" | grep -o \"/\" | wc -l) -gt 2 ]]; then short_dir=\"...$(echo \"$short_dir\" | rev | cut -d'/' -f1,2 | rev)\"; fi; git_info=\"\"; if cd \"$cwd\" 2>/dev/null && git --no-optional-locks rev-parse --git-dir >/dev/null 2>&1; then branch=$(git --no-optional-locks symbolic-ref --short HEAD 2>/dev/null || echo \"detached\"); status_output=$(git --no-optional-locks status --porcelain 2>/dev/null); staged_added=$(echo \"$status_output\" | grep -c '^A'); staged_deleted=$(echo \"$status_output\" | grep -c '^D'); staged_modified=$(echo \"$status_output\" | grep -c '^[MRC]'); unstaged_added=$(echo \"$status_output\" | grep -c '^.A'); unstaged_deleted=$(echo \"$status_output\" | grep -c '^.D'); unstaged_modified=$(echo \"$status_output\" | grep -c '^.M'); untracked=$(echo \"$status_output\" | grep -c '^??'); dirty_mark=\"\"; if [ \"$staged_added\" -gt 0 ] || [ \"$staged_deleted\" -gt 0 ] || [ \"$staged_modified\" -gt 0 ] || [ \"$unstaged_added\" -gt 0 ] || [ \"$unstaged_deleted\" -gt 0 ] || [ \"$unstaged_modified\" -gt 0 ] || [ \"$untracked\" -gt 0 ]; then dirty_mark=\"*\"; fi; staged_str=$(printf \"staged[+%d -%d ~%d]\" \"$staged_added\" \"$staged_deleted\" \"$staged_modified\"); unstaged_str=$(printf \"unstaged[+%d -%d ~%d]\" \"$unstaged_added\" \"$unstaged_deleted\" \"$unstaged_modified\"); untracked_str=$(printf \"?%d\" \"$untracked\"); if [ -n \"$dirty_mark\" ]; then branch_color=\"\\033[33m\"; else branch_color=\"\\033[32m\"; fi; git_info=$(printf \" %b%s%s\\033[0m \\033[32m%s\\033[0m \\033[33m%s\\033[0m \\033[2m%s\\033[0m\" \"$branch_color\" \"$branch\" \"$dirty_mark\" \"$staged_str\" \"$unstaged_str\" \"$untracked_str\"); fi; if [ -n \"$git_info\" ]; then printf '\\n\\033[36m%s\\033[0m%s\\n' \"$short_dir\" \"$git_info\"; else printf '\\n\\033[36m%s\\033[0m\\n' \"$short_dir\"; fi"
   }
 }

@@ -54,13 +54,54 @@ git add [files for commit 2] && git commit -m "[message 2]"
 ```
 ```
 
-## Commit Message Rules
+## Commit Message Format
 
-Write messages as the user would:
+Structure each commit message with:
+
+### Subject Line (Required)
 - Imperative mood: "Add", "Fix", "Update", "Remove"
-- First line: concise summary (50-72 characters)
-- NO AI attribution, signatures, or co-author tags
-- NO "Generated with Claude" or similar
-- NO "Co-Authored-By" lines
+- Concise summary (50-72 characters)
 
-The user made the decisions. Your role is to execute their intent with clean git history.
+### Body (Required for non-trivial changes)
+After a blank line, include:
+
+1. **Why**: The problem being solved or goal being achieved
+   - What motivated this change?
+   - What wasn't working or what's being improved?
+
+2. **Approach**: High-level strategy and architectural decisions
+   - How does this solution work conceptually?
+   - What design pattern or approach was chosen and why?
+   - Any trade-offs considered?
+
+3. **Key Changes**: What someone would need to understand to reproduce this
+   - Core logic or algorithm changes (describe, don't paste code)
+   - New abstractions or interfaces introduced
+   - Integration points or dependencies affected
+   - Configuration or behavior changes
+
+### What NOT to Include
+- Actual code snippets (unless absolutely crucial for understanding)
+- Line-by-line change descriptions
+- AI attribution, signatures, or co-author tags
+- "Generated with Claude" or similar phrases
+
+### Example Format
+```
+Add rate limiting to API endpoints
+
+Why: Users were experiencing throttling from upstream services due to
+unbounded request rates during peak usage.
+
+Approach: Implemented token bucket algorithm at the middleware level.
+Chose this over fixed windows for better burst handling. Rate limits
+are configurable per-endpoint via environment variables.
+
+Key changes:
+- RateLimiter middleware wraps all /api routes
+- Token replenishment runs on configurable interval
+- Exceeded limits return 429 with Retry-After header
+- Limits stored in Redis for distributed deployments
+```
+
+The user made the decisions. Your role is to execute their intent with clean, informative git history.
