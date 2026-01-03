@@ -4,53 +4,68 @@ description: Create git commits with user approval and no Claude attribution
 
 # Commit Changes
 
-Your task is to create git commits for the changes made during this session. The user wants you to take ownership of the commit process while maintaining their authorship.
+Your task is to create git commits for the changes made during this session with **hunk-level granularity**. Cherry-pick specific sections of code into logical commits rather than staging entire files.
 
 ## Why This Matters
 
-You have the full context of what was accomplished in this session. The user trusts your judgment to organize changes into logical commits with clear messages. Your goal is to create a clean git history that accurately represents the work done.
+You have the full context of what was accomplished in this session. The user trusts your judgment to organize changes into logical commits with clear messages. Your goal is to create a clean git history that accurately represents the work done—even when a single file contains multiple unrelated changes.
 
 ## Step 1: Analyze Changes (Make Parallel Calls)
 
 Execute these git commands in parallel to understand the current state:
 - Run `git status` to see all staged and unstaged changes
-- Run `git diff` to view the actual modifications
+- Run `git diff --no-color` to view the actual modifications with hunk boundaries
 - Run `git log --oneline -5` to see recent commit style
 
-While reviewing these results, also consider the conversation history to understand the purpose and scope of changes.
+While reviewing the diff, identify individual **hunks** (sections marked by `@@` lines). Each hunk is a discrete change that can be staged independently.
 
-## Step 2: Plan Commit Strategy
+## Step 2: Plan Commit Strategy (Hunk-Level)
 
 Based on your analysis, determine:
-- **Logical grouping**: Which files belong together based on their purpose (e.g., feature changes separate from test updates, frontend separate from backend)
-- **Atomic commits**: Each commit should represent one complete, coherent change
-- **Commit messages**: Write in imperative mood ("Add feature" not "Added feature"), focus on WHY the change was made and WHAT problem it solves
+- **Logical grouping at hunk level**: Which hunks belong together based on purpose
+  - A single file may have hunks belonging to different commits
+  - Multiple files may have hunks belonging to the same commit
+- **Atomic commits**: Each commit = one complete, coherent change
+- **Commit messages**: Write in imperative mood, focus on WHY and WHAT
 
 ## Step 3: Present Plan for Approval
 
-Show the user your commit strategy in this format:
+Show the user your commit strategy with specific line ranges:
 
 ```
 I plan to create [N] commit(s):
 
 Commit 1: [Commit message]
-Files: [list of files]
+Changes:
+- `path/to/file1.ts`: Lines 10-25 (validation logic)
+- `path/to/file1.ts`: Lines 100-105 (related error handling)
+- `path/to/file2.ts`: Full file
 
 Commit 2: [Commit message]
-Files: [list of files]
+Changes:
+- `path/to/file1.ts`: Lines 50-60 (refactor helper)
+- `path/to/file3.ts`: Full file
 
 Shall I proceed with these commits?
 ```
 
-This preview ensures alignment before making irreversible changes.
-
 ## Step 4: Execute Commits
 
 Once the user confirms:
-1. Add specific files using `git add [file1] [file2]` (specify exact files, never use `-A` or `.` to maintain precise control)
-2. Create each commit with `git commit -m "message"`
-3. Run `git log --oneline -n [number]` to show the created commits
-4. Confirm completion to the user
+
+**For hunk-level staging** (when file has mixed changes):
+1. Create patch files in `/tmp/commits/` containing only relevant hunks
+2. Apply each patch: `git apply --cached /tmp/commits/commit-N.patch`
+3. Commit: `git commit -m "message"`
+
+**For whole-file staging** (when all changes in file belong together):
+1. Add files: `git add [file1] [file2]`
+2. Commit: `git commit -m "message"`
+
+After all commits:
+3. Run `git log --oneline -n [number]` to show created commits
+4. Run `git status` to verify no unexpected changes remain
+5. Cleanup: `rm -rf /tmp/commits`
 
 ## Commit Message Format
 
